@@ -1,13 +1,8 @@
-# EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation
-Official implementation and dataset for our MICCAI 2025 Efficient Medical AI Workshop paper, "MIP-Based Tumor Segmentation: A Radiologist-Inspired Approach."
+# MIP-Based Tumor Segmentation: A Radiologist-Inspirde Approach
 
-PET/CT imaging is the clinical gold standard for tumor detection, especially for local and metastatic lesion identification. Clinicians frequently review rotational Multi-Angle Maximum Intensity Projections (MIPs) from PET scans as an initial step before analyzing full 3D volumes. This manual process, however, can be time-consuming, particularly in metastatic cases.
-
-In this work, we propose a novel approach that directly trains segmentation models on MIPs rather than volumetric 3D data, aligning the training domain with clinical workflows and dramatically improving computational efficiency. We also introduce an occlusion correction method to address annotation occlusions in MIPs caused by high-intensity structures, enhancing segmentation quality.
-
-Our approach achieves comparable segmentation performance to traditional 3D pipelines while significantly reducing training time, energy consumption, and computational complexity. We evaluate our method on the autoPET 2022 Grand Challenge dataset, providing a detailed analysis of how the number of MIP views influences segmentation accuracy and efficiency.
-
-# MIP-Based Tumor Segmentation from PET/CT Imaging
+Official implementation and dataset of the paper:
+**MIP-Based Tumor Segmentation: A Radiologist-Inspired Approach**
+accepted to the 1st workshop on Efficient Medical AI in MICCAI 2025 (Daejeon, South Korea).
 
 [![EMA4MICCAI 2025](https://img.shields.io/badge/EMA4MICCAI-2025-blue.svg)](https://miccai.org)
 
