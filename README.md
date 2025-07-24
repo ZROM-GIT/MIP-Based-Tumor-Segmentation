@@ -1,23 +1,15 @@
-# MIP-Based Tumor Segmentation: A Radiologist-Inspirde Approach
+# MIP-Based Tumor Segmentation: A Radiologist-Inspired Approach
 
-Official implementation and dataset of the paper:
-**MIP-Based Tumor Segmentation: A Radiologist-Inspired Approach**
-accepted to the 1st workshop on Efficient Medical AI in MICCAI 2025 (Daejeon, South Korea).
+Official implementation and dataset of the paper:  
+**MIP-Based Tumor Segmentation: A Radiologist-Inspired Approach**  
+Accepted to the 1st Workshop on Efficient Medical AI (EMA4MICCAI) at MICCAI 2025, Daejeon, South Korea.
 
 [![EMA4MICCAI 2025](https://img.shields.io/badge/EMA4MICCAI-2025-blue.svg)](https://miccai.org)
 
-## Table of Contents
-1. [Introduction](#1-introduction)  
-2. [Dataset](#2-dataset)  
-3. [Data Preparation and MIP Generation](#3-data-preparation-and-mip-generation)  
-4. [Environment Setup](#4-environment-setup)  
-5. [Training](#5-training)  
-6. [Evaluation](#6-evaluation)  
-7. [Results Summary](#7-results-summary)  
-8. [Repository Structure](#8-repository-structure)  
-9. [Citation](#9-citation)  
-10. [Acknowledgments](#10-acknowledgments)  
-11. [License](#11-license)  
+**Authors:**  
+Romario Zarik, Nahum Kiryati, Michael Green, Liran Domachevsky, Arnaldo Mayer  
+Contact: Romario Zarik – romariozarik@mail.tau.ac.il  
+Computational Imaging Lab (CILAB) – [https://www.cilab.org.il/](https://www.cilab.org.il/)
 
 ---
 
@@ -35,12 +27,28 @@ Our approach:
 
 ---
 
+## 2. Repository Structure
+
+EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/  
+│  
+├── Checkpoints/ # Will hold all the checkpoints created when training the models  
+├── Codes/ # Will hold all the scripts and codes  
+├── Configs/ # Training and Testing configuration files  
+├── Datasets/ # Dataset placeholders (not included)  
+├── TestPredictions/ # Will contain the predicted segmentation masks (Test) for the different experiments (notincluded)  
+├── TestResults/ # Will contain json files with metrics for Tests  
+├── ValPredictions/  # Will contain the predicted segmentation masks (Validation during different epochs) for the different experiments (not included)  
+├── requirements.txt # Python package dependencies  
+└── README.md # This README file  
+
+
 ## 2. Dataset
 
-We use the **autoPET 2022 Grand Challenge** dataset.
+We use the **autoPET 2022 Grand Challenge** dataset.  
+The dataset is held in the TCIA website.
 
-- Dataset link and details: [https://autopet.grand-challenge.org/](https://autopet.grand-challenge.org/)  
-- Please follow their instructions to download and pre-process the data.
+- Grand Challenge link and details: [https://autopet.grand-challenge.org/](https://autopet.grand-challenge.org/)
+- Dataset link and pre-processing codes: [https://www.cancerimagingarchive.net/collection/fdg-pet-ct-lesions/](https://www.cancerimagingarchive.net/collection/fdg-pet-ct-lesions/)
 
 ---
 
