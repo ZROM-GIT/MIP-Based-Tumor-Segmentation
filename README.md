@@ -56,7 +56,7 @@ The dataset is held in the TCIA website.
 
 ### 3.1 Pre-processing
 
-Use the official **autoPET pre-processing tools** (available on the dataset site) to prepare raw 3D PET/CT volumes. This ensures standardized, high-quality inputs.
+Use the official **autoPET pre-processing tools** (available on the dataset site) to prepare raw 3D PET/CT volumes in niftii format. This ensures standardized, resampled high-quality inputs.
 
 ### 3.2 MIP Generation
 
@@ -69,7 +69,7 @@ Our repository provides scripts to generate rotational Multi-Angle MIPs:
 
 ```bash
 python scripts/mip_generation/create_mips.py --input_dir path/to/preprocessed_data --output_dir path/to/mip_output --angles 48
-
+```
 
 
 Soon to be uploaded...
