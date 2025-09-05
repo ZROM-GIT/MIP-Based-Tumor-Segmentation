@@ -84,20 +84,18 @@ EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/
 
 ```
 
-
-
-
 ### 3.3 MIP Generation
 
-Our repository provides scripts to generate rotational Multi-Angle MIPs:
+Our repository provides scripts to generate rotational Multi-Angle MIPs: OR-MIPs and OC-MIPs
 
-- Located in `scripts/mip_generation/`  
-- Supports customizable rotation angles and occlusion correction.
+- Located in `Codes/create_dataset`  
+- Supports customizable rotation angles, start and end angles, binary and multi-label segmentations, and different occlusion correction configurations.
 
-**Example command:**
+**Commands to create the dataset used in the paper:**  
 
+OR-MIPs:  
 ```bash
-python scripts/mip_generation/create_mips.py --input_dir path/to/preprocessed_data --output_dir path/to/mip_output --angles 48
+python codes/create_dataset/creating_all_mips_new.py --num_of_mips 48 --starting_angle 0 --ending_angle 180 --input_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/niftis --output_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/MIPs
 ```
 
 
