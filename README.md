@@ -29,6 +29,7 @@ Our approach:
 
 ## 2. Repository Structure
 
+```
 EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/  
 │  
 ├── Checkpoints/ # Will hold all the checkpoints created when training the models  
@@ -40,7 +41,7 @@ EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/
 ├── ValPredictions/  # Will contain the predicted segmentation masks (Validation during different epochs) for the different experiments (not included)  
 ├── requirements.txt # Python package dependencies  
 └── README.md # This README file  
-
+```
 
 ## 2. Dataset
 
@@ -58,7 +59,35 @@ The dataset is held in the TCIA website.
 
 Use the official **autoPET pre-processing tools** (available on the dataset site) to prepare raw 3D PET/CT volumes in niftii format. This ensures standardized, resampled high-quality inputs.
 
-### 3.2 MIP Generation
+### 3.2 Directories organization 
+
+Under the Datasets folder, make sure to keep the newly created niftis in the following directory tree:
+
+```
+EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/
+│
+├── Datasets/                               # Dataset placeholders (not included)
+│   └── FDG-PET-CT-Lesions/
+│       └── manifest-1654187277763/
+│           └── niftis/                  # This folder contains all our raw 3D data, contains one folder per patient
+│               ├── PETCT_0af7ffe12a/        # Example patient
+│               │   └── 08-12-2005-NA-PET-CT Ganzkoerper  primaer mit KM-96698/  # Example case for this patient
+│               │       ├── CT.nii.gz        # High-resolution CT image
+│               │       ├── CTres.nii.gz     # CT image resampled to PET resolution
+│               │       ├── PET.nii.gz       # PET image
+│               │       ├── SUV.nii.gz       # Standardized Uptake Value (SUV) image
+│               │       └── SEG.nii.gz       # Ground-truth segmentation mask
+│               ├── PETCT_0b57b247b6/        # Another patient (may have multiple cases)
+│               └── PETCT_0b98dbe00d/        # Another patient
+│
+└── ...                                      # Additional patients/cases follow this structure
+
+```
+
+
+
+
+### 3.3 MIP Generation
 
 Our repository provides scripts to generate rotational Multi-Angle MIPs:
 
