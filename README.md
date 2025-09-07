@@ -95,8 +95,10 @@ Our repository provides scripts to generate rotational Multi-Angle MIPs: OR-MIPs
 
 OR-MIPs:  
 ```bash
-python codes/create_dataset/creating_all_mips_new.py --num_of_mips 48 --starting_angle 0 --ending_angle 180 --input_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/niftis --output_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/MIPs
+python Codes/create_dataset/creating_all_mips_new.py --num_of_mips 48 --starting_angle 0 --ending_angle 180 --input_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/niftis --output_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/MIPs
 ```
-
-
+OC-MIPs: 
+```
+python Codes/create_dataset/create_screened_dataset.py --num_of_mips 48 --volume_threshold 25 --threshold 75 --split_tumors --start_angle 0 --end_angle 0 --input_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/niftis --output_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/MIPs_new --filter_by_gradient
+```
 Soon to be uploaded...
