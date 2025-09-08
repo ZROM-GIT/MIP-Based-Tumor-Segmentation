@@ -27,6 +27,42 @@ Our approach:
 
 ---
 
+## 2. Installation
+
+We recommend using **[pyenv](https://github.com/pyenv/pyenv)** to manage Python versions and keep the environment isolated.
+
+### Step 1: Create a Python Environment
+```
+# Install Python (example: 3.12.3)
+pyenv install 3.12.3
+
+# Create a virtual environment with pyenv-virtualenv
+pyenv virtualenv 3.12.3 mip-tumor-seg
+
+# Activate the environment
+pyenv activate mip-tumor-seg
+```
+
+### Step 2: Install Dependencies
+
+Use the requirements.txt file in the project to install the dependencies. 
+```
+pip install -r requirements.txt
+```
+
+Note that if at any point in the installation, any of the packages is not being installed properly, it is recommended to manually delete the specific package version by deleting the number following the package name in the requirements.txt file. 
+If you wish to install the latest versions of all dependencies, you can remove version pins from requirements.txt with the following command:
+```
+sed -i 's/[=<>!].*//g' requirements.txt
+```
+
+### Step 3: Install the Local pet_ct Package (written by ZROM) 
+This package contains functions and classes that are mandatory for the scripts to run. 
+Run the following command in the terminal: 
+```
+pip install -e Codes/pet_ct
+```
+
 ## 2. Repository Structure
 
 ```
@@ -43,7 +79,7 @@ EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/
 └── README.md # This README file  
 ```
 
-## 2. Dataset
+## 3. Dataset
 
 We use the **autoPET 2022 Grand Challenge** dataset.  
 The dataset is held in the TCIA website.
@@ -53,13 +89,13 @@ The dataset is held in the TCIA website.
 
 ---
 
-## 3. Data Preparation and MIP Generation
+## 4. Data Preparation and MIP Generation
 
-### 3.1 Pre-processing
+### 4.1 Pre-processing
 
 Use the official **autoPET pre-processing tools** (available on the dataset site) to prepare raw 3D PET/CT volumes in niftii format. This ensures standardized, resampled high-quality inputs.
 
-### 3.2 Directories organization 
+### 4.2 Directories organization 
 
 Under the Datasets folder, make sure to keep the newly created niftis in the following directory tree:
 
@@ -84,21 +120,23 @@ EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/
 
 ```
 
+### 4.3 MIP Generation
 
+Our repository provides scripts to generate rotational Multi-Angle MIPs: OR-MIPs and OC-MIPs
 
+- Located in `Codes/create_dataset`  
+- Supports customizable rotation angles, start and end angles, binary and multi-label segmentations, and different occlusion correction configurations.
 
-### 3.3 MIP Generation
+**Commands to create the dataset used in the paper:**  
 
-Our repository provides scripts to generate rotational Multi-Angle MIPs:
-
-- Located in `scripts/mip_generation/`  
-- Supports customizable rotation angles and occlusion correction.
-
-**Example command:**
-
+OR-MIPs:  
 ```bash
-python scripts/mip_generation/create_mips.py --input_dir path/to/preprocessed_data --output_dir path/to/mip_output --angles 48
+python Codes/create_dataset/creating_all_mips_new.py --num_of_mips 48 --starting_angle 0 --ending_angle 180 --input_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/niftis --output_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/MIPs
+```
+OC-MIPs: 
+```
+python Codes/create_dataset/create_screened_dataset.py --num_of_mips 48 --volume_threshold 25 --threshold 75 --split_tumors --start_angle 0 --end_angle 0 --input_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/niftis --output_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/MIPs_new --filter_by_gradient
 ```
 
+You should run these commands with num_of_mips = 16/32/48/64/80 for all datasets. 
 
-Soon to be uploaded...
