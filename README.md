@@ -30,6 +30,10 @@ Our approach:
 ## 2. Installation
 
 We recommend using **[pyenv](https://github.com/pyenv/pyenv)** to manage Python versions and keep the environment isolated.
+We used Pyenv with: 
+- Python version: 3.12.3
+- Torch version: 2.6.0
+- MONAI version: 1.5.0
 
 ### Step 1: Create a Python Environment
 ```
@@ -72,8 +76,8 @@ EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/
 ├── Codes/ # Will hold all the scripts and codes  
 ├── Configs/ # Training and Testing configuration files  
 ├── Datasets/ # Dataset placeholders (not included)  
-├── TestPredictions/ # Will contain the predicted segmentation masks (Test) for the different experiments (notincluded)  
-├── TestResults/ # Will contain json files with metrics for Tests  
+├── TestPredictions/ # Will contain the predicted segmentation masks (Test) for the different experiments (not included)  
+├── TestResults/ # Will contain JSON files with metrics for Tests  
 ├── ValPredictions/  # Will contain the predicted segmentation masks (Validation during different epochs) for the different experiments (not included)  
 ├── requirements.txt # Python package dependencies  
 └── README.md # This README file  
@@ -82,7 +86,7 @@ EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/
 ## 3. Dataset
 
 We use the **autoPET 2022 Grand Challenge** dataset.  
-The dataset is held in the TCIA website.
+The dataset is held on the TCIA website.
 
 - Grand Challenge link and details: [https://autopet.grand-challenge.org/](https://autopet.grand-challenge.org/)
 - Dataset link and pre-processing codes: [https://www.cancerimagingarchive.net/collection/fdg-pet-ct-lesions/](https://www.cancerimagingarchive.net/collection/fdg-pet-ct-lesions/)
@@ -97,7 +101,7 @@ Use the official **autoPET pre-processing tools** (available on the dataset site
 
 ### 4.2 Directories organization 
 
-Under the Datasets folder, make sure to keep the newly created niftis in the following directory tree:
+Under the Datasets folder, make sure to keep the newly created Niftis in the following directory tree:
 
 ```
 EMA4MICCAI-2025-MIP-Based-Tumor-Segmentation/
