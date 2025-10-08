@@ -293,10 +293,6 @@ Pre-trained model weights and configuration files are available for download (se
 
 ---
 
-**Pre-trained Models and Configs:**  
-You can download ready-to-use weights and configurations for all experiments here:  
-👉 [Pre-trained Models & Configs (Google Drive / Zenodo link TBD)]()
-
 
 
 
