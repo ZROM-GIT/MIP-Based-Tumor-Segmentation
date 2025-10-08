@@ -142,5 +142,163 @@ OC-MIPs:
 python Codes/create_dataset/create_screened_dataset.py --num_of_mips 48 --volume_threshold 25 --threshold 75 --split_tumors --start_angle 0 --end_angle 0 --input_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/niftis --output_path Datasets/FDG-PET-CT-Lesions/manifest-1654187277763/MIPs_new --filter_by_gradient
 ```
 
-You should run these commands with num_of_mips = 16/32/48/64/80 for all datasets. 
+You should run these commands with num_of_mips = 16/32/48/64/80 for all datasets.  
+
+## 5. Experiments
+
+We conducted three main experiments to evaluate our MIP-based tumor segmentation approach.  
+Each experiment can be **reproduced** using the provided configuration files in the `Configs/` directory, or replicated with **pre-trained weights** (see Section 6).
+
+---
+
+### **5.1 Classification of Healthy vs. Non-Healthy Cases**
+
+**Goal:**  
+Evaluate whether a 2D CNN trained on Multi-Angle MIPs can classify patients as *healthy* or *non-healthy* (pathological) using PET scans, compared to a 3D CNN trained on full volumetric data.
+
+**Setup:**  
+- **Input:** 16 MIPs per case (PET MIPs only) / Volumetric 3D PET 
+- **Model:** CNN with attention pooling and fully connected classification head  
+- **Loss:** Cross-Entropy  
+- **Evaluation metrics:** Accuracy, Precision, Recall, F1-score  
+- **Train Configs:** `Configs/experiment_configurations/train/classifier/mip_16_binary_classifier_fold{X}.yaml` (for 2D) and `Configs/experiment_configurations/train/classifier/volumetric_binary_classifier_fold{X}` (for 3D)
+
+**Training from scratch:**
+```bash
+# Train 3D:
+python Codes/main_classifier.py --config Configs/experiment_configurations/train/classifier/volumetric_binary_classifier_fold1.yaml
+
+# Train 16 MIPs: 
+python Codes/main_classifier.py --config Configs/experiment_configurations/train/classifier/mip_16_binary_classifier_fold1.yaml
+```
+
+**Testing using pre-trained weights:**  
+
+The Weights can be found [here](https://drive.google.com/drive/u/2/folders/1xmzh8d2Uxs-AYG2TkCYP3Cq8UHPBNO1W).
+Copy the "classifier" directory to the "Weights" directory in the project and run the following: 
+
+```bash
+# Train 3D:
+python Codes/main_classifier.py --config Configs/experiment_configurations/test/classifier/volumetric_binary_classifier_fold1.yaml
+
+# Train 16 MIPs: 
+python Codes/main_classifier.py --config Configs/experiment_configurations/test/classifier/mip_16_binary_classifier_fold1.yaml
+```
+The results will appear under 'TestResults/classifier'.
+
+---
+
+### **5.2 Segmentation Performance vs. Number of MIPs**
+
+**Goal:**  
+Analyze how the number of projection angles (MIPs) impacts segmentation performance and efficiency.
+
+**Setup:**  
+- **Input:** Multi-Angle PET MIPs generated at different angular resolutions (16, 32, 48, 64, 80)  
+- **Model:** Attention U-Net  
+- **Loss:** Dice Loss
+- **Evaluation metrics:** Dice, IoU, Hausdorff Distance, TFLOPs, Inference Time  
+- **Configs:** `Configs/config_segmentation_MIPs_{16,32,48,64,80}.yaml`
+
+**Train command example (for 48 MIPs):**
+```bash
+python Codes/train.py --config Configs/config_segmentation_MIPs_48.yaml
+```
+
+**Note:**  
+48 MIPs were found to provide the best trade-off between accuracy and computational cost.
+
+---
+
+### **5.3 Segmentation: MIPs vs. 3D Volumes**
+
+**Goal:**  
+Compare MIP-based segmentation models to full 3D volumetric segmentation pipelines.
+
+**Setup:**  
+- **3D model:** Swin-UNETR trained on volumetric PET (SUV) data  
+- **2D model:** Attention U-Net trained on Multi-Angle MIPs  
+- **Loss:** Dice or Dice + Cross-Entropy  
+- **Evaluation metrics:** Dice, IoU, Hausdorff Distance, Convergence Time, Energy per Epoch, TFLOPs  
+- **Configs:**  
+  - `Configs/config_segmentation_3D.yaml`  
+  - `Configs/config_segmentation_MIPs_48.yaml`
+
+**Train commands:**
+```bash
+# Train 3D segmentation model
+python Codes/train_3D.py --config Configs/config_segmentation_3D.yaml
+
+# Train MIP-based segmentation model
+python Codes/train.py --config Configs/config_segmentation_MIPs_48.yaml
+```
+
+---
+
+After training, validation and test predictions will be automatically stored in:  
+```
+ValPredictions/  
+TestPredictions/  
+TestResults/
+```
+
+Pre-trained model weights and configuration files are available for download (see below).
+
+---
+
+## 6. Results
+
+### **6.1 Segmentation: MIPs vs. 3D**
+
+| Metric | 3D (projected) | OR-MIPs | OC-MIPs |
+|:--|:--:|:--:|:--:|
+| Dice ↑ | 0.597 ± 0.05 | 0.578 ± 0.01 | **0.591 ± 0.01** |
+| IoU ↑ | 0.471 ± 0.04 | 0.452 ± 0.01 | **0.466 ± 0.01** |
+| HD ↓ | 139.61 ± 8.42 | 102.81 ± 9.61 | **102.26 ± 9.53** |
+| CT (h) ↓ | 54.64 ± 19.22 | 24.14 ± 17.8 | **13.18 ± 4.1** |
+| EPE (Wh/epoch) ↓ | 142.2 ± 79.1 | 40.22 ± 12.48 | **34.19 ± 4.7** |
+| TFLOPs ↓ | 317.4 ± 144.0 | **0.97 ± 0.29** | **0.97 ± 0.29** |
+
+---
+
+### **6.2 Classification: Healthy vs. Non-Healthy**
+
+| Metric | 3D | 16 MIPs |
+|:--|:--:|:--:|
+| Accuracy (%) ↑ | 72.8 ± 3.2 | **80.5 ± 1.7** |
+| Precision (%) ↑ | 75.4 ± 6.0 | **83.6 ± 3.3** |
+| Recall (%) ↑ | **91.9 ± 8.8** | 89.5 ± 2.9 |
+| F1-score (%) ↑ | 82.3 ± 1.2 | **86.4 ± 0.8** |
+| CT (h) ↓ | 44.7 ± 1.5 | **4.2 ± 0.2** |
+| EPE (Wh/epoch) ↓ | 70.7 ± 3.23 | **4.7 ± 0.1** |
+
+---
+
+### **6.3 Effect of the Number of MIPs**
+
+| MIPs | Dice (mean ± std) | TFLOPs (↓) | Inference Time (s) ↓ |
+|:--|:--:|:--:|:--:|
+| 16 | 0.562 ± 0.012 | 0.32 | 3.1 |
+| 32 | 0.579 ± 0.010 | 0.64 | 5.2 |
+| **48** | **0.591 ± 0.009** | 0.97 | 7.0 |
+| 64 | 0.590 ± 0.011 | 1.31 | 9.6 |
+| 80 | 0.589 ± 0.010 | 1.64 | 11.3 |
+
+---
+
+**Summary:**  
+- **MIP-based segmentation** achieves similar Dice scores to 3D while being 4× faster and 300× more efficient.  
+- **Classification on 16 MIPs** surpasses 3D with 10× faster training and 93% lower energy use.  
+- **48 MIPs** provide the optimal trade-off between segmentation performance and efficiency.
+
+---
+
+**Pre-trained Models and Configs:**  
+You can download ready-to-use weights and configurations for all experiments here:  
+👉 [Pre-trained Models & Configs (Google Drive / Zenodo link TBD)]()
+
+
+
+
+
 
