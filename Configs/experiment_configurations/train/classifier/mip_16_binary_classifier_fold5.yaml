@@ -1,0 +1,144 @@
+# Resume training (optional) and log experiment (optional)
+train: True
+test: True
+resume_training: False
+checkpoint_to_resume_from: ''
+log_experiment: True
+run_id: ''
+log_temps: False
+
+# Trainer and Tester to load
+trainer: 'trainers.trainer_classifier.Trainer'
+tester: 'testers.tester_classifier.Tester'
+
+# Path to JSON file that holds all the dataset paths
+json_path: 'Configs/json_datasets/num_of_mips_comparison/MIPs16/MIPs16_75th_25vth_IncSplit_0_180_fold5.json'
+
+# Saves paths
+save_weights_path: 'Weights'
+save_checkpoints_path: 'Checkpoints'
+save_val_predictions_path: 'ValPredictions'
+
+# Project & experiment details
+project_name: 'PET'
+experiment_name: 'classifying_16mips_fold5'
+experiment_number: 5
+
+#########################################################################################
+
+# Constant values for yaml
+input_name: &input_name
+    'SUV_mips'
+target_name: &target_name
+    'class_number'
+
+#########################################################################################
+
+# Training Parameters
+device: 0  # Number of GPU (0/1) or 'cpu'
+use_amp: True  # Always uses Scaler. Always False when not training on GPU
+amp_dtype: float16  # torch.(float16/bfloat16)
+use_gradient_clipping: False
+use_scheduler: True
+use_sliding_window_inference: [] # ['training', 'validation']
+save_val_every_n: 10000
+save_checkpoint_every_n: 50  # Save checkpoint every epoch number
+save_checkpoint_when_val_improves: True  # True/False
+
+# Hyperparameters
+batch_size: 1
+accum_iter: 1
+epochs: 200
+shuffle_data: True
+seed: 598484 # None for non-determinism
+
+# Dataset type
+dataset_arguments:
+    dataset_type: Dataset  # CacheDataset for speed (more memory) / SmartCacheDataset for partial cached datasets
+is_segmentation: False  # Set to True if the dataset is for segmentation tasks
+
+# Optimizer arguments
+optimizer_arguments:
+    optimizer: 'AdamW'
+    weight_decay: 1e-3
+    lr: 1e-5
+
+# Gradient Clipping arguments
+gradient_clipping_arguments:
+    norm_type: 2
+    max_norm: 1
+    error_if_nonfinite: True
+    foreach: True
+
+# Loss function arguments
+loss_function_arguments:
+    loss_function_name: 'CrossEntropyLoss'
+
+# Learning Rate Scheduler
+scheduler_arguments:
+    scheduler: CosineAnnealingWarmRestarts
+    T_0: 10
+    T_mult: 2
+    eta_min: 1e-8
+
+# Model arguments
+model_arguments:
+    model_name: PETClassifier
+    attention_type: 'simple'
+    attention_out_features: 768
+    encoder_features: [32, 64, 128, 256]
+    hidden_sizes: [512, 128, 16]
+    num_attention_heads: 12
+    num_classes: 2
+    dropout: 0.3
+
+
+# Final activation (after model)
+final_activation: None
+
+# Parameters for Sliding Window Inference
+sliding_window_inference_params:
+    roi_size: []
+    sw_batch_size: 4
+    overlap: 0.5
+    mode: 'gaussian'
+
+# Metrics
+metrics:
+    BinaryConfusionMatrix: {}
+
+# Transforms
+defaultTransforms:
+    LoadImaged:
+        keys:
+            - *input_name
+        image_only: False
+        ensure_channel_first: True
+    NormalizeIntensityd:
+        keys:
+            - *input_name
+    ToTensord:
+        keys:
+            - *target_name
+        dtype: 'long'
+    Lambdad:
+        keys:
+            - *target_name
+        func: 'lambda x: (x > 1)*1'
+    AsDiscreted:
+        keys:
+            - *target_name
+        to_onehot: 2
+
+trainTransforms: {}
+
+valTransforms: {}
+
+testTransforms: {}
+
+# Utilities
+sets: ['training', 'validation', 'test']
+set2transforms:
+    training: 'trainTransforms'
+    validation: 'valTransforms'
+    test: 'testTransforms'
