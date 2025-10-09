@@ -167,12 +167,30 @@ Compare MIP-based segmentation models to full 3D volumetric segmentation pipelin
 
 **Training from scratch:**
 ```bash
-# Train 3D segmentation model
-python Codes/train_3D.py --config Configs/config_segmentation_3D.yaml
+# Train 3D (fold 1):
+python Codes/main.py --config Configs/experiment_configurations/train/SwinUNETR_3D/PET_non_healthy_swin_pet_only_fold1.yaml
 
-# Train MIP-based segmentation model
-python Codes/train.py --config Configs/config_segmentation_MIPs_48.yaml
+# Train OR-MIPs (fold 1): 
+python Codes/main.py --config Configs/experiment_configurations/train/AttentionUnet_48mips_OR/AttUnet_48MIPs_fold1.yaml
 ```
+To train the OC-MIPs, see experiment 5.3 (48 MIPs only). 
+
+**Testing using pre-trained weights:**  
+
+The Weights can be found [here](https://drive.google.com/drive/u/2/folders/1xmzh8d2Uxs-AYG2TkCYP3Cq8UHPBNO1W).
+Copy the "AttentionUnet_48mips_original", "AttentionUnet_48mips_TrainAS_TestOriginal", and "" directories to the "Weights" directory in the project and run the following: 
+
+```bash
+# Test projected 3D predictions on OR-MIPs (fold 1):
+python Codes/main_test.py --config Configs/experiment_configurations/test/SwinUNETR_3D/PET_non_healthy_swin_pet_only_naive_mips_test_fold1.yaml
+
+# Test OC-MIPs on OR-MIPs (fold 1): 
+python Codes/main_test.py --config Configs/experiment_configurations/test/AttentionUnet_48mips_original/AttUnet_48MIPs_TrainAS_TestOriginal_fold1.yaml
+
+# Test OR-MIPs on OR-MIPs (fold 1):
+python Codes/main_test.py --config Configs/experiment_configurations/test/AttentionUnet_48mips_original/AttUnet_48MIPs_fold1.yaml
+```
+The results will appear under 'TestResults'.
 
 ---
 
@@ -190,10 +208,10 @@ Evaluate whether a 2D CNN trained on Multi-Angle MIPs can classify patients as *
 
 **Training from scratch:**
 ```bash
-# Train 3D:
+# Train 3D (fold 1):
 python Codes/main_classifier.py --config Configs/experiment_configurations/train/classifier/volumetric_binary_classifier_fold1.yaml
 
-# Train 16 MIPs: 
+# Train 16 MIPs (fold 1): 
 python Codes/main_classifier.py --config Configs/experiment_configurations/train/classifier/mip_16_binary_classifier_fold1.yaml
 ```
 
@@ -203,10 +221,10 @@ The Weights can be found [here](https://drive.google.com/drive/u/2/folders/1xmzh
 Copy the "classifier" directory to the "Weights" directory in the project and run the following: 
 
 ```bash
-# Train 3D:
+# Test 3D:
 python Codes/main_classifier.py --config Configs/experiment_configurations/test/classifier/volumetric_binary_classifier_fold1.yaml
 
-# Train 16 MIPs: 
+# Test 16 MIPs: 
 python Codes/main_classifier.py --config Configs/experiment_configurations/test/classifier/mip_16_binary_classifier_fold1.yaml
 ```
 The results will appear under 'TestResults/classifier'.
