@@ -1,0 +1,133 @@
+# Resume training (optional) and log experiment (optional)
+train: False
+test: True
+resume_training: False
+checkpoint_to_resume_from: '/Checkpoints/...'
+log_experiment: false
+run_id: ''
+log_temps: false
+
+# Choose whether to load the checkpoint or weights and using which path
+checkpoint: 'Checkpoints/AttentionUnet_48mips_original/PET3_AttentionUnet_48mips_original_fold3/best_checkpoint.pt'
+weights: 'Weights/AttentionUnet_48mips_original/PET3_AttentionUnet_48mips_original_fold3/best_weights.pt'
+weights_source: W # Weights (W) / Checkpoint (C)
+
+# Path to JSON file that holds all the dataset paths
+json_path: 'Configs/json_datasets/num_of_mips_comparison/MIPs48/MIPs48_fold3.json'
+
+# Trainer and Tester to load
+trainer: 'trainers.trainer.Trainer'
+tester: 'testers.tester.Tester'
+
+# Saves paths
+save_prediction: False
+save_test_predictions_path: 'TestPredictions'
+save_test_results_path: 'TestResults'
+
+# Project & experiment details
+project_name: 'PET'
+experiment_name: 'AttentionUnet_48mips_original_fold3'
+experiment_number: 3
+
+#########################################################################################
+
+# Constant values for yaml
+input_name: &input_name
+    'SUV_mips'
+target_name: &target_name
+    'SEG_mips'
+num_of_mips: &num_of_mips
+    48
+
+#########################################################################################
+
+# Testing Parameters
+device: 0  # Number of GPU (0/1) or 'cpu'
+use_amp: False  # Always uses Scaler. Always False when not training on GPU
+amp_dtype: float16  # torch.(float16/bfloat16)
+use_sliding_window_inference: ['test'] # train / validation / test
+create_mips: False
+
+# Hyperparameters
+batch_size: 1
+epochs: 200
+shuffle_data: False
+
+# Dataset type
+dataset_arguments:
+    dataset_type: Dataset  # CacheDataset for speed (more memory) / SmartCacheDataset for partial cached datasets
+
+# Loss function arguments
+loss_function_arguments:
+    loss_function_name: 'DiceLoss'
+    include_background: False
+
+# Model arguments
+model_arguments:
+    model_name: AttentionUnet
+    in_channels: 1
+    out_channels: 2
+    spatial_dims: 3
+    channels: [16, 32, 64, 128, 256]
+    strides: [2, 2, 2, 2]
+    kernel_size: 3
+    up_kernel_size: 3
+
+# Final activation (after model)
+final_activation: 'softmax'
+
+# Parameters for Sliding Window Inference
+sliding_window_inference_params:
+    roi_size: [0, 400, *num_of_mips]
+    sw_batch_size: 4
+    overlap: 0.5
+    mode: 'gaussian'
+
+# Metrics
+metrics:
+    DiceMetric:
+        include_background: false
+        get_not_nans: true
+        ignore_empty: false
+    MeanIoU:
+        include_background: false
+        get_not_nans: true
+        ignore_empty: false
+    HausdorffDistanceMetric: {}
+metricForSaving: 'DiceMetric'
+
+# Transforms
+defaultTransforms:
+    LoadImaged:
+        keys:
+            - *input_name
+            - *target_name
+        image_only: true
+        ensure_channel_first: true
+    ToTensord:
+        keys:
+            - *target_name
+        dtype: 'long'
+    onehot_bin:
+        keys:
+            - *target_name
+        dim: 0
+    DivisiblePadd:
+        keys:
+            - *input_name
+            - *target_name
+        k: 16
+        method: 'symmetric'
+
+testTransforms: {}
+
+# Utilities
+sets: ['test']
+set2transforms:
+    test: 'testTransforms'
+
+# Inverse transforms
+test_inverse_transforms:
+    activation: False
+    timing: 'pre' # pre / post metric calculation
+    num_of_reverses: -1

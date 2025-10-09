@@ -47,7 +47,7 @@ class Tester:
         self.use_sliding_window_inference = getattr(self.args, 'use_sliding_window_inference', False)
         self.use_amp = getattr(self.args, 'use_amp', False)
         self.amp_dtype = getattr(torch, getattr(self.args, 'amp_dtype', 'float32'))
-        self.create_mips = getattr(self.args, 'create_mips', False)
+        self.create_mips_from_predictions = getattr(self.args, 'create_mips', False)
 
         if self.final_activation:
             self.final_activation = getattr(torch.nn.functional, self.final_activation)
@@ -255,38 +255,18 @@ class Tester:
                 if self.masks:
                     pred_target = self.masks(input=input, output=pred_target)
 
-                # Compute the loss and its gradients
-                loss = self.loss_fn(pred, target).mean()
-
         # Inverse transforms (Pre-metrics)
         pred_target = InverseTransforms(input=input, pred=pred_target, target=target, transforms=self.transforms,
                                         dataloader=self.test_dataloader, timing='pre', set='test',
                                         args=self.args, device=self.device)
 
-        if self.create_mips:
+        if self.create_mips_from_predictions:
             pred_target = self.create_mips(input, target, pred_target, num_of_mips=48)
 
         # Compute metrics
         for i, _ in enumerate(target):
             if target[i, 1].any(): # 2nd dim: First channel = Background, Second channel = Foreground
                 self.compute_metrics(y=torch.unsqueeze(target[i], 0), y_pred=pred_target[i].unsqueeze(0))
-
-        # if self.detect_tumors:
-        #     self.data, Precision, Recall = (
-        #         per_tumor_mip_detection(suv=batch['SUV_3D'],
-        #                                 seg=batch['SEG_3D'],
-        #                                 pred=pred_target,
-        #                                 start_angle=0,
-        #                                 end_angle=180,
-        #                                 num_of_mips=16,
-        #                                 ver_threshold=0.75,
-        #                                 pixel_size_threshold=3,
-        #                                 split_tumors=True,
-        #                                 visualSNR_threshold=8,
-        #                                 IOU_threshold=0.3,
-        #                                 data=self.data
-        #                                 ))
-        #     self.Precision.append(Precision), self.Recall.append(Recall)
 
         # Inverse transforms (Post-metrics)
         pred_target = InverseTransforms(input=input, pred=pred_target, target=target, transforms=self.transforms,
@@ -297,7 +277,7 @@ class Tester:
         if self.save_prediction:
             self.save_prediction_as_nifti(input=input, target=target, seg_prediction=pred_target)
 
-        return loss.item()
+        return
 
     def test_loop(self):
         # Initialize needed objects
@@ -310,33 +290,17 @@ class Tester:
         self.load_metrics()
 
         test_loader = tqdm(self.test_dataloader, colour='blue')
-        running_loss_test = []
 
         for i, batch in enumerate(test_loader):
             self.batch_num = i + 1
             test_loader.set_description(f'Batch {self.batch_num} in process')
 
             # Evaluate data
-            loss = self.eval(batch=batch)
-            running_loss_test.append(loss)
-            test_loader.set_description(f'Testing: batch loss = {loss}')
-
-
-        # Logging test loss
-        loss_test = np.mean(running_loss_test)
-        self.test_loss = loss_test
-        self.log('loss', self.test_loss, key='test', step=None)
+            self.eval(batch=batch)
+            test_loader.set_description(f'Testing:...')
 
         # Log metrics
         # self.log_metrics(keys=['test'])
-
-        if self.detect_tumors:
-            if hasattr(self.args, 'detection_save_path'):
-                self.data.to_csv(Path(self.args.detection_save_path) / f'conf{self.args.experiment_number}_{self.prediction_threshold}PredThresh.csv')
-                with open(Path(self.args.detection_save_path) / f'conf{self.args.experiment_number}_{self.prediction_threshold}PredThresh_Precision.pkl', 'wb') as f:
-                    pickle.dump(self.Precision, f)
-                with open(Path(self.args.detection_save_path) / f'conf{self.args.experiment_number}_{self.prediction_threshold}PredThresh_Recall.pkl', 'wb') as f:
-                    pickle.dump(self.Recall, f)
 
         self.compute_mean_metrics()
         if self.save_analysis:

@@ -6,10 +6,12 @@ import torch
 
 from pet_ct.main_utils.dataloader import Dataloader
 from pet_ct.main_utils.model import Model
+from pet_ct.main_utils.load_tester import get_tester
 from pet_ct.main_utils.load_args import load_args
+from pet_ct.main_utils.loss_function import LossFunction
 from pet_ct.main_utils.load_transforms import load_transforms
 from pet_ct.main_utils.load_weights import load_weights
-from tester import Tester
+
 
 def parse_args():
     """ Parses command-line arguments """
@@ -23,8 +25,12 @@ def main():
 
     # Import default configuration arguments
     project_dir = os.path.dirname(os.path.dirname(__file__))
+    # conf = 'Configs/experiment_configurations/test/SwinUNETR_3D/PET_non_healthy_swin_pet_only_naive_mips_test_fold1.yaml'
     conf = 'Configs/experiment_configurations/test/AttentionUnet_48mips_original/AttUnet_48MIPs_TrainAS_TestOriginal_fold5.yaml'
     args = load_args(conf, cli_args, project_dir)
+
+    # Load tester
+    Tester = get_tester(args)
 
     # Initialize device for training
     device = torch.device(f"cuda:{args.device}") if isinstance(args.device, int) else torch.device("cpu")
@@ -37,6 +43,9 @@ def main():
     dataloader = Dataloader(args=args, transforms=transforms)
     dataloader.create_dataloader()
 
+    # Assigning loss function and its inputs
+    lossFunc = LossFunction(args).create_loss_function()
+
     # Creating instance of the model
     model = Model(args).create_model().to(device)
 
@@ -46,7 +55,9 @@ def main():
     # Testing
     tester = Tester(args=args,
                     model=model,
-                    dataloader=dataloader.test_dataloader,
+                    test_dataloader=dataloader.test_dataloader,
+                    loss_fn=lossFunc,
+                    device=device,
                     transforms=transforms)
     tester.test_loop()
 

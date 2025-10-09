@@ -1,0 +1,159 @@
+# Resume training (optional) and log experiment (optional)
+train: False
+test: True
+resume_training: False
+checkpoint_to_resume_from: ''
+log_experiment: False
+run_id: ''
+log_temps: False
+
+# Choose whether to load the checkpoint or weights and using which path
+checkpoint: ''
+weights: 'Weights/SwinUNETR_3D/PET0_heiligerl_experiment_PET_only_fold2/best_weights.pt'
+weights_source: W # Weights (W) / Checkpoint (C)
+
+# Trainer and Tester to load
+trainer: 'trainers.trainer.Trainer'
+tester: 'testers.tester_3d2mips.Tester'
+
+# Path to JSON file that holds all the dataset path
+json_path: '/mnt/sda1/PET/json_datasets/num_of_mips_comparison/MIPs48/MIPs48_fold2.json' # Update link to have test data
+
+# Saves paths
+save_weights_path: 'Weights'
+save_checkpoints_path: 'Checkpoints'
+save_val_predictions_path: 'ValPredictions'
+
+# Project & experiment details
+project_name: PET
+experiment_name: 'heiligerl_experiment_PET_only_naive_mips_fold2'
+experiment_number: 0
+
+#########################################################################################
+
+# Constant values for yaml 
+num_of_mips: &num_of_mips
+    48
+input_name: &input_name
+    'SUV_3D'
+target_name: &target_name
+    'SEG_mips'
+
+#########################################################################################
+
+# Training Parameters
+device: 0  # Number of GPU (0/1) or 'cpu'
+use_amp: False  # Always uses Scaler. Always False when not training on GPU
+amp_dtype: float16  # torch.(float16/bfloat16)
+use_gradient_clipping: False
+use_scheduler: False
+use_sliding_window_inference: ['test'] # ['training', 'validation']
+save_val_every_n: 10000
+save_checkpoint_every_n: 50  # Save checkpoint every epoch number
+save_checkpoint_when_val_improves: True  # True/False
+create_mips: True
+
+# Hyperparameters
+batch_size: 1
+epochs: 100
+shuffle_data: true
+seed: 598484 # None for non-determinism
+
+# Dataset type
+dataset_arguments:
+    dataset_type: Dataset  # CacheDataset for speed (more memory) / SmartCacheDataset for partial cached datasets
+is_segmentation: True  # Set to True if the dataset is for segmentation tasks
+
+# Loss function arguments
+loss_function_arguments:
+    loss_function_name: 'DiceCELoss'
+    include_background: false
+
+# Model arguments
+model_arguments: 
+    model_name: SwinUNETR
+    img_size: [96, 96, 96]
+    in_channels: 1
+    out_channels: 2
+    spatial_dim: 3
+    feature_size: 48
+    use_checkpoint: false
+
+# Optional final actvation
+final_activation: 'softmax'
+
+# Whether to use sliding window inference 
+sliding_window_inference_params:
+    roi_size: [96, 96, 96]
+    sw_batch_size: 4
+    overlap: 0.25
+    mode: 'gaussian'
+
+# Metrics
+metrics:
+    DiceMetric: 
+        include_background: false
+        get_not_nans: true 
+        ignore_empty: false 
+    MeanIoU:
+        include_background: false
+        get_not_nans: true 
+        ignore_empty: false 
+    HausdorffDistanceMetric: {} 
+
+
+# Test transforms
+testTransforms: {}
+
+# Transforms
+defaultTransforms:
+    LoadImaged:
+        keys: 
+            - *input_name
+            - CT_3D
+            - *target_name
+        image_only: true
+        ensure_channel_first: true
+        dtype: 'float16'
+    ToTensord:
+        keys: 
+            - *input_name
+            - *target_name
+    NormalizeIntensityd:
+        keys: 
+            - *input_name
+        nonzero: True 
+    ScaleIntensityRangePercentilesd:
+        keys:       
+            - CT_3D
+        lower: 0.5 
+        upper: 99.5 
+        b_min: 0.0
+        b_max: 1.0 
+        clip: True 
+    Orientationd:
+        keys: 
+            - *input_name
+            - CT_3D
+        axcodes: 'LAS'
+    CropForegroundd:
+        keys: 
+            - *input_name
+            - CT_3D
+        allow_smaller: True
+        source_key: CT_3D
+    onehot_bin:
+        keys:
+            - *target_name
+        dim: 1
+
+sets: ['test']
+set2transforms:
+    training: transforms
+    validation: valTransformsrms
+    test: testTransforms
+
+test_inverse_transforms:
+    activation: True
+    timing: 'pre' # pre / post metric calculation
+    num_of_reverses: 1

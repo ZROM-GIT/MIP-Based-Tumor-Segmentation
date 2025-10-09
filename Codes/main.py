@@ -94,21 +94,22 @@ def main(conf):
                           transforms=transforms)
         trainer.train_loop()
 
-    # if args.test:
-    #     tester = Tester(args=args,
-    #                     model=model,
-    #                     test_dataloader=dataloader.test_dataloader,
-    #                     loss_fn=lossFunc,
-    #                     device=device,
-    #                     logger=run,
-    #                     transforms=transforms)
-    #     tester.test_loop()
+    if args.test:
+        tester = Tester(args=args,
+                        model=model,
+                        test_dataloader=dataloader.test_dataloader,
+                        loss_fn=lossFunc,
+                        device=device,
+                        logger=run,
+                        transforms=transforms)
+        tester.test_loop()
 
     if args.log_experiment:
         run.finish()
 
 if __name__ == "__main__":
     config_list = [
+        # 'Configs/experiment_configurations/train/SwinUNETR_3D/PET_non_healthy_swin_pet_only_fold1.yaml'
         'Configs/experiment_configurations/train/AttentionUnet_48mips_OR/AttUnet_48MIPs_fold1.yaml'
     ]
 

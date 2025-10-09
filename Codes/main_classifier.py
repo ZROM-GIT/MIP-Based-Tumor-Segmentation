@@ -115,6 +115,3 @@ if __name__ == "__main__":
     for conf_path in config_list:
         print(f"Running experiment with config: {conf_path}")
         main(conf_path)
-
-
-
