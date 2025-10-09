@@ -1,0 +1,218 @@
+# Resume training (optional) and log experiment (optional)
+train: True
+test: False
+resume_training: False
+checkpoint_to_resume_from: ''
+log_experiment: False
+run_id: ''
+log_temps: False
+
+# Trainer and Tester to load
+trainer: 'trainers.trainer.Trainer'
+tester: 'testers.tester.Tester'
+
+# Path to JSON file that holds all the dataset paths
+json_path: 'Configs/json_datasets/non_healthy/MIPs16/MIPs16_75th_25vth_IncSplit_0_180_non_healthy_fold1.json'
+
+# Saves paths
+save_weights_path: 'Weights'
+save_checkpoints_path: 'Checkpoints'
+save_val_predictions_path: 'ValPredictions'
+
+# Project & experiment details
+project_name: PET
+experiment_name: 'heiligerl_experiment_PET_only_fold1'
+experiment_number: 0
+
+#########################################################################################
+
+# Constant values for yaml 
+num_of_mips: &num_of_mips
+    16
+input_name: &input_name
+    'SUV_3D'
+target_name: &target_name
+    'SEG_3D'
+
+#########################################################################################
+
+# Training Parameters
+device: 0  # Number of GPU (0/1) or 'cpu'
+use_amp: False  # Always uses Scaler. Always False when not training on GPU
+amp_dtype: float16  # torch.(float16/bfloat16)
+use_gradient_clipping: False
+use_scheduler: False
+use_sliding_window_inference: ['validation'] # ['training', 'validation']
+save_val_every_n: 10000
+save_checkpoint_every_n: 50  # Save checkpoint every epoch number
+save_checkpoint_when_val_improves: True  # True/False
+
+# Hyperparameters
+batch_size: 1
+epochs: 100
+shuffle_data: true
+seed: 598484 # None for non-determinism
+
+# Dataset type
+dataset_arguments:
+    dataset_type: Dataset  # CacheDataset for speed (more memory) / SmartCacheDataset for partial cached datasets
+is_segmentation: True  # Set to True if the dataset is for segmentation tasks
+
+# Optimizer arguments
+optimizer_arguments: 
+    optimizer: 'AdamW'
+    weight_decay: 1e-5
+    lr: 1e-4
+    
+# Clip gradients
+clip_gradients: false 
+clip_arguments: 
+    norm_type: 2
+    max_norm: 1
+
+# Loss function arguments
+loss_function_arguments: 
+    loss_function_name: 'DiceCELoss'
+    include_background: false 
+    
+# Learning Rate Scheduler
+scheduler_arguments: 
+    scheduler: CyclicLR
+    base_lr: 1e-6
+    max_lr: 5e-4
+    mode: triangular2
+    step_size_up: 5
+    step_size_down: 15
+    gamma: 0.6
+    cycle_momentum: false
+
+# Model arguments
+model_arguments: 
+    model_name: SwinUNETR
+    img_size: [96, 96, 96]
+    in_channels: 1
+    out_channels: 2
+    spatial_dim: 3
+    feature_size: 48
+    use_checkpoint: false
+    use_v2: false
+    
+
+# Final activation 
+final_activation: softmax
+
+# Whether to use sliding window inference 
+sliding_window_inference_params:
+    roi_size: [96, 96, 96]
+    sw_batch_size: 8
+    overlap: 0.25
+    mode: 'constant' # gaussian
+
+# Metrics
+metrics:
+    DiceMetric: 
+        include_background: false
+        get_not_nans: true 
+        ignore_empty: false 
+    MeanIoU:
+        include_background: false
+        get_not_nans: true 
+        ignore_empty: false         
+    HausdorffDistanceMetric: {} 
+metricForSaving: DiceMetric
+
+# Transforms
+defaultTransforms:
+    LoadImaged:
+        keys: 
+            - SUV_3D
+            - CT_3D
+            - SEG_3D
+        image_only: true
+        ensure_channel_first: true
+        dtype: 'float16'
+    Orientationd:
+        keys: 
+            - SUV_3D
+            - CT_3D
+            - SEG_3D
+        axcodes: 'LAS'
+    NormalizeIntensityd:
+        keys: 
+            - SUV_3D
+        nonzero: True 
+    ScaleIntensityRangePercentilesd:
+        keys:       
+            - CT_3D
+        lower: 0.5 
+        upper: 99.5 
+        b_min: 0.0
+        b_max: 1.0 
+        clip: True 
+    CropForegroundd:
+        keys: 
+            - SUV_3D
+            - CT_3D
+            - SEG_3D
+        source_key: CT_3D
+    onehot_bin:
+        keys:
+            - *target_name
+        dim: 1
+
+trainTransforms:
+    RandCropByPosNegLabeld:
+        keys: 
+            - *input_name
+            - *target_name 
+        label_key: *target_name 
+        spatial_size: [96, 96, 96]
+        pos: 2
+        neg: 1
+        num_samples: 4
+        image_key: *input_name 
+        image_threshold: 0
+    RandRotated:
+        keys: 
+            - *input_name
+            - *target_name 
+        range_x: eval('(-15. / 360 * 2. * np.pi, 15. / 360 * 2. * np.pi)')
+        range_y: eval('(-15. / 360 * 2. * np.pi, 15. / 360 * 2. * np.pi)')
+        range_z: eval('(-15. / 360 * 2. * np.pi, 15. / 360 * 2. * np.pi)')
+        prob: 0.2 
+        mode: ['bilinear', 'nearest']
+    ToTensord:
+        keys: 
+            - *input_name
+            - *target_name
+
+valTransforms:
+    ToTensord:
+        keys: 
+            - *input_name
+            - *target_name
+
+testTransforms: {}
+
+# Utilities
+sets: ['training', 'validation', 'test']
+set2transforms:
+    training: trainTransforms
+    validation: valTransforms
+    test: testTransforms
+
+# Inverse transforms 
+training_inverse_transforms:
+    activation: False
+    timing: 'pre' # pre / post metric calculation
+    num_of_reverses: -1
+
+validation_inverse_transforms:
+    activation: False
+    timing: 'pre' # pre / post metric calculation
+    num_of_reverses: -1
+
+test_inverse_transforms:
+    activation: False
+    timing: 'pre' # pre / post metric calculation
+    num_of_reverses: -1
