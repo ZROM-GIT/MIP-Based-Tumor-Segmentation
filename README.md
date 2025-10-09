@@ -151,7 +151,32 @@ Each experiment can be **reproduced** using the provided configuration files in 
 
 ---
 
-### **5.1 Classification of Healthy vs. Non-Healthy Cases**
+### **5.1 Segmentation: MIPs vs. 3D Volumes**
+
+**Goal:**  
+Compare MIP-based segmentation models to full 3D volumetric segmentation pipelines.
+
+**Setup:**  
+- **3D model:** Swin-UNETR trained on volumetric PET (SUV) data  
+- **2D model:** Attention U-Net trained on Multi-Angle MIPs  
+- **Loss:** Dice or Dice + Cross-Entropy  
+- **Evaluation metrics:** Dice, IoU, Hausdorff Distance, Convergence Time, Energy per Epoch, TFLOPs  
+- **Configs:**  
+  - `Configs/config_segmentation_3D.yaml`  
+  - `Configs/config_segmentation_MIPs_48.yaml`
+
+**Training from scratch:**
+```bash
+# Train 3D segmentation model
+python Codes/train_3D.py --config Configs/config_segmentation_3D.yaml
+
+# Train MIP-based segmentation model
+python Codes/train.py --config Configs/config_segmentation_MIPs_48.yaml
+```
+
+---
+
+### **5.2 Classification of Healthy vs. Non-Healthy Cases**
 
 **Goal:**  
 Evaluate whether a 2D CNN trained on Multi-Angle MIPs can classify patients as *healthy* or *non-healthy* (pathological) using PET scans, compared to a 3D CNN trained on full volumetric data.
@@ -188,7 +213,7 @@ The results will appear under 'TestResults/classifier'.
 
 ---
 
-### **5.2 Segmentation Performance vs. Number of MIPs**
+### **5.3 Segmentation Performance vs. Number of MIPs**
 
 **Goal:**  
 Analyze how the number of projection angles (MIPs) impacts segmentation performance and efficiency.
@@ -207,31 +232,6 @@ python Codes/train.py --config Configs/config_segmentation_MIPs_48.yaml
 
 **Note:**  
 48 MIPs were found to provide the best trade-off between accuracy and computational cost.
-
----
-
-### **5.3 Segmentation: MIPs vs. 3D Volumes**
-
-**Goal:**  
-Compare MIP-based segmentation models to full 3D volumetric segmentation pipelines.
-
-**Setup:**  
-- **3D model:** Swin-UNETR trained on volumetric PET (SUV) data  
-- **2D model:** Attention U-Net trained on Multi-Angle MIPs  
-- **Loss:** Dice or Dice + Cross-Entropy  
-- **Evaluation metrics:** Dice, IoU, Hausdorff Distance, Convergence Time, Energy per Epoch, TFLOPs  
-- **Configs:**  
-  - `Configs/config_segmentation_3D.yaml`  
-  - `Configs/config_segmentation_MIPs_48.yaml`
-
-**Train commands:**
-```bash
-# Train 3D segmentation model
-python Codes/train_3D.py --config Configs/config_segmentation_3D.yaml
-
-# Train MIP-based segmentation model
-python Codes/train.py --config Configs/config_segmentation_MIPs_48.yaml
-```
 
 ---
 
