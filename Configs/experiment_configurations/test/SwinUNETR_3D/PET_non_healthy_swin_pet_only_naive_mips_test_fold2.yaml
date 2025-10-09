@@ -23,6 +23,7 @@ json_path: '/mnt/sda1/PET/json_datasets/num_of_mips_comparison/MIPs48/MIPs48_fol
 save_weights_path: 'Weights'
 save_checkpoints_path: 'Checkpoints'
 save_val_predictions_path: 'ValPredictions'
+save_test_results_path: 'TestResults'
 
 # Project & experiment details
 project_name: PET
