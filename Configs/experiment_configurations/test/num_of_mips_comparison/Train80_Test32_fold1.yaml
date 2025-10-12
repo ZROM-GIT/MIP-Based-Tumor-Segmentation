@@ -1,0 +1,128 @@
+# Resume training (optional) and log experiment (optional)
+train: False
+test: True
+resume_training: False
+checkpoint_to_resume_from: '/Checkpoints/...'
+log_experiment: false
+run_id: ''
+log_temps: false
+
+# Choose whether to load the checkpoint or weights and using which path
+checkpoint: ''
+weights: 'Weights/num_of_mips_comparison/PET999_Train80_fold1.pt'
+weights_source: W # Weights (W) / Checkpoint (C)
+
+# Path to JSON file that holds all the dataset path
+json_path: 'Configs/json_datasets/num_of_mips_comparison/MIPs32/MIPs32_75th_25vth_IncSplit_0_180_fold1.json' # Update link to have test data
+
+# Trainer and Tester to load
+trainer: 'trainers.trainer.Trainer'
+tester: 'testers.tester.Tester'
+
+# Saves paths
+save_prediction: False
+save_test_predictions_path: 'TestPredictions'
+save_test_results_path: 'TestResults'
+
+# Project & experiment details
+project_name: PET
+experiment_name: 'Train80_Test32_fold1'
+experiment_number: 999
+
+#########################################################################################
+
+# Constant values for yaml 
+num_of_mips: &num_of_mips
+    32
+input_name: &input_name
+    'SUV_mips'
+target_name: &target_name
+    'SEG_mips'
+
+#########################################################################################
+
+# Testing Parameters
+device: 0  # Number of GPU (0/1) or 'cpu'
+use_amp: True  # Always uses Scaler. Always False when not training on GPU
+amp_dtype: float16  # torch.(float16/bfloat16)
+use_sliding_window_inference: [] # train / validation / test
+create_mips: False
+
+# Hyperparameters
+batch_size: 1
+shuffle_data: False
+
+# Dataset type
+dataset_arguments:
+    dataset_type: Dataset  # CacheDataset for speed (more memory) / SmartCacheDataset for partial cached datasets
+
+# Loss function arguments
+loss_function_arguments:
+    loss_function_name: 'DiceLoss'
+    include_background: False
+    
+# Model arguments
+model_arguments: 
+    model_name: AttentionUnet
+    in_channels: 1
+    out_channels: 2
+    spatial_dims: 3
+    channels: [16, 32, 64, 128, 256]
+    strides: [2, 2, 2, 2]
+    kernel_size: 3
+    up_kernel_size: 3
+
+# Optional final actvation
+final_activation: 'softmax'
+
+# Whether to use sliding window inference 
+sliding_window_inference_params:
+    roi_size: [208, 400, 16]
+    sw_batch_size: 8
+    overlap: 0.5
+    mode: 'gaussian'
+
+# Metrics
+metrics:
+    DiceMetric: 
+        include_background: false
+        get_not_nans: true 
+        ignore_empty: false 
+    HausdorffDistanceMetric: {} 
+
+# Test transforms
+defaultTransforms:
+    LoadImaged:
+        keys: 
+            - *input_name
+            - *target_name
+        image_only: true
+        ensure_channel_first: true
+        dtype: 'float16'
+    ToTensord:
+        keys: 
+            - *target_name
+        dtype: 'long'
+    onehot_bin:
+        keys:
+            - *target_name
+        dim: 0
+    DivisiblePadd:
+        keys:
+            - *input_name
+            - *target_name
+        k: 16
+        method: 'symmetric'   
+
+testTransforms: {}
+
+sets: ['test']
+set2transforms:
+    test: testTransforms
+
+is_segmentation: true # For datalist creation 
+
+test_inverse_transforms:
+    activation: False
+    timing: 'pre' # pre / post metric calculation
+    num_of_reverses: -1
