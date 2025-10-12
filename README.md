@@ -248,14 +248,21 @@ Analyze how the number of projection angles (MIPs) impacts segmentation performa
 python Codes/main.py --config Configs/experiment_configurations/train/num_of_mips_comparison/Train48_fold1.yaml
 ```
 
-Change 48 to any number in {16, 32, 48, 64, 80} and 1 to any og the 5 fold: {1, 2, 3, 4, 5}.
+Change 48 to any number in {16, 32, 48, 64, 80} and 1 to any of the 5 folds: {1, 2, 3, 4, 5}.
 
 ---
 
-After training, validation and test predictions will be automatically stored in:  
+**Test command example (for 48 MIPs, fold 1):**
+```bash
+python Codes/main_test.py --config Configs/experiment_configurations/test/num_of_mips_comparison/Train48_Test16_fold1.yaml
 ```
-ValPredictions/  
-TestPredictions/  
+
+Change 48 and 16 to any number in {16, 32, 48, 64, 80} and 1 to any of the 5 folds: {1, 2, 3, 4, 5}.
+
+---
+
+Final results will be stored in:
+```
 TestResults/
 ```
 
