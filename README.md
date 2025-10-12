@@ -243,13 +243,12 @@ Analyze how the number of projection angles (MIPs) impacts segmentation performa
 - **Evaluation metrics:** Dice, IoU, Hausdorff Distance, TFLOPs, Inference Time  
 - **Configs:** `Configs/config_segmentation_MIPs_{16,32,48,64,80}.yaml`
 
-**Train command example (for 48 MIPs):**
+**Train command example (for 48 MIPs, fold 1):**
 ```bash
-python Codes/train.py --config Configs/config_segmentation_MIPs_48.yaml
+python Codes/main.py --config Configs/experiment_configurations/train/num_of_mips_comparison/Train48_fold1.yaml
 ```
 
-**Note:**  
-48 MIPs were found to provide the best trade-off between accuracy and computational cost.
+Change 48 to any number in {16, 32, 48, 64, 80} and 1 to any og the 5 fold: {1, 2, 3, 4, 5}.
 
 ---
 
