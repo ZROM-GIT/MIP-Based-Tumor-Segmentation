@@ -26,7 +26,8 @@ def main():
     # Import default configuration arguments
     project_dir = os.path.dirname(os.path.dirname(__file__))
     # conf = 'Configs/experiment_configurations/test/SwinUNETR_3D/PET_non_healthy_swin_pet_only_naive_mips_test_fold1.yaml'
-    conf = 'Configs/experiment_configurations/test/AttentionUnet_48mips_original/AttUnet_48MIPs_TrainAS_TestOriginal_fold5.yaml'
+    # conf = 'Configs/experiment_configurations/test/AttentionUnet_48mips_original/AttUnet_48MIPs_TrainAS_TestOriginal_fold5.yaml'
+    conf = 'Configs/experiment_configurations/test/num_of_mips_comparison/Train16_Test32_fold1.yaml'
     args = load_args(conf, cli_args, project_dir)
 
     # Load tester

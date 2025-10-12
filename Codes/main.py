@@ -110,7 +110,8 @@ def main(conf):
 if __name__ == "__main__":
     config_list = [
         # 'Configs/experiment_configurations/train/SwinUNETR_3D/PET_non_healthy_swin_pet_only_fold1.yaml'
-        'Configs/experiment_configurations/train/AttentionUnet_48mips_OR/AttUnet_48MIPs_fold1.yaml'
+        # 'Configs/experiment_configurations/train/AttentionUnet_48mips_OR/AttUnet_48MIPs_fold1.yaml'
+        'Configs/experiment_configurations/train/num_of_mips_comparison/Train32_fold1.yaml'
     ]
 
     for conf_path in config_list:
