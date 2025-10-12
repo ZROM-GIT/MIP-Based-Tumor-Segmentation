@@ -1,0 +1,7 @@
+{
+    "avg_gflops": 323.5018181818182,
+    "std_gflops": 96.27766836222013,
+    "avg_inference_time (seconds)": 0.23294606301691625,
+    "std_inference_time (seconds)": 0.06599117680659765,
+    "number of parameters": "5.91 M"
+}

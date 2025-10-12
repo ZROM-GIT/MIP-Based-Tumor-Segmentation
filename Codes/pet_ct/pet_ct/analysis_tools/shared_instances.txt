@@ -1,0 +1,25 @@
+ PETCT_0fa313309d/10-03-2005-NA-PET-CT Ganzkoerper  primaer mit KM-74496
+  PETCT_2946d59a94/11-06-2006-NA-PET-CT Ganzkoerper nativ-66800
+  PETCT_36bb0257fc/08-03-2003-NA-PET-CT Ganzkoerper  primaer mit KM-17917
+  PETCT_3c3050f75e/09-05-2002-NA-PET-CT Ganzkoerper  primaer mit KM-31873
+  PETCT_4760c0139a/01-26-2006-NA-PET-CT Ganzkoerper  primaer mit KM-28262
+  PETCT_53dad1785b/12-11-2005-NA-PET-CT Ganzkoerper  primaer mit KM-08525
+  PETCT_86153b2974/06-05-2003-NA-PET-CT Ganzkoerper  primaer mit KM-72845
+  PETCT_a19c2a0c65/03-05-2006-NA-PET-CT Ganzkoerper  primaer mit KM-55038
+  PETCT_a21200dcba/03-10-2005-NA-PET-CT Ganzkoerper  primaer mit KM-40542
+  PETCT_af547fa618/03-11-2006-NA-PET-CT Ganzkoerper  primaer mit KM-11358
+  PETCT_b5923963ac/02-17-2007-NA-PET-CT Ganzkoerper  primaer mit KM-32609
+  PETCT_b663adb148/06-21-2007-NA-PET-CT Ganzkoerper  primaer mit KM-71959
+  PETCT_b66ba83594/03-13-2003-NA-PET-CT Ganzkoerper  primaer mit KM-23908
+  PETCT_b899150306/08-11-2002-NA-PET-CT Ganzkoerper  primaer mit KM-26543
+  PETCT_bb45bfcffd/01-03-2003-NA-PET-CT Ganzkoerper  primaer mit KM-50107
+  PETCT_bd7603e9df/05-06-2005-NA-PET-CT Ganzkoerper  primaer mit KM-26867
+  PETCT_ddca6cfba6/02-27-2004-NA-PET-CT Ganzkoerper  primaer mit KM-47148
+  PETCT_de118d7ab9/06-02-2001-NA-PET-CT Ganzkoerper  primaer mit KM-18077
+  PETCT_e1a5b05186/02-27-2005-NA-PET-CT Ganzkoerper  primaer mit KM-36173
+  PETCT_e6f6c84ec5/11-05-2005-NA-PET-CT Ganzkoerper  primaer mit KM-82117
+  PETCT_e79291780d/05-14-2007-NA-PET-CT Ganzkoerper  primaer mit KM-72066
+  PETCT_ea6c621616/08-08-2005-NA-PET-CT Ganzkoerper  primaer mit KM-54129
+  PETCT_eca59074b9/07-20-2002-NA-PET-CT Ganzkoerper  primaer mit KM-73521
+  PETCT_f144b214af/02-23-2001-NA-PET-CT Ganzkoerper  primaer mit KM-64199
+  PETCT_f8314eb3f7/03-14-2003-NA-PET-CT Ganzkoerper nativ-46438
