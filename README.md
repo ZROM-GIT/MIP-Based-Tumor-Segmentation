@@ -1,6 +1,6 @@
 # MIP-Based Tumor Segmentation: A Radiologist-Inspired Approach
 
-Official implementation and dataset of the paper:  
+Official implementation of the **[paper](https://arxiv.org/abs/2510.09326)**:  
 **MIP-Based Tumor Segmentation: A Radiologist-Inspired Approach**  
 Accepted to the 1st Workshop on Efficient Medical AI (EMA4MICCAI) at MICCAI 2025, Daejeon, South Korea.
 
